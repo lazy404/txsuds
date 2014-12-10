@@ -18,18 +18,13 @@
 The I{wsse} module provides WS-Security.
 """
 
+import random
 from logging import getLogger
 from suds import *
 from suds.sudsobject import Object
 from suds.sax.element import Element
 from suds.sax.date import UTC
 from datetime import datetime, timedelta
-
-try:
-    from hashlib import md5
-except ImportError:
-    # Python 2.4 compatibility
-    from md5 import md5
 
 
 dsns = \
@@ -136,13 +131,11 @@ class UsernameToken(Token):
         @type text: str
         """
         if text is None:
-            s = []
-            s.append(self.username)
-            s.append(self.password)
-            s.append(Token.sysdate())
-            m = md5()
-            m.update(':'.join(s))
-            self.nonce = m.hexdigest()
+            # Random 16 bytes presented as a string
+            """TODO According to the standard, SOAP client must remember nonces, used in the last time,
+            to avoid duplicating random values. It is not implemented now.
+            """
+            self.nonce = ''.join([chr(random.randint(0, 255)) for i in range(16)])
         else:
             self.nonce = text
         

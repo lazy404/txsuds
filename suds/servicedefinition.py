@@ -184,7 +184,11 @@ class ServiceDefinition:
         @rtype: str
         """
         resolved = type.resolve()
-        name = resolved.name
+        if resolved.name is not None:
+            name = resolved.name
+        else:
+            name = '*'
+
         if type.unbounded():
             name += '[]'
         ns = resolved.namespace()

@@ -689,7 +689,7 @@ class SoapClient:
         action = self.method.soap.action
         if isinstance(action, unicode):
             action = action.encode('utf-8')
-        stock = { 'Content-Type' : 'text/xml; charset=utf-8', 'SOAPAction': action }
+        stock = { 'Content-Type' : 'application/soap+xml; charset=utf-8', 'SOAPAction': action }
         result = dict(stock, **self.options.headers)
         log.debug('headers = %s', result)
         return result
@@ -730,13 +730,12 @@ class SoapClient:
         status, reason = (error.httpcode, tostr(error))
         reply = error.fp.read()
         log.debug('http failed:\n%s', reply)
-        if status == 500:
-            if len(reply) > 0:
-                r, p = binding.get_fault(reply)
-                self.last_received(r)
-                return (status, p)
-            else:
-                return (status, None)
+        if len(reply) > 0:
+            r, p = binding.get_fault(reply)
+            self.last_received(r)
+            return (status, p)
+        else:
+            return (status, None)
         if self.options.faults:
             raise Exception((status, reason))
         else:
